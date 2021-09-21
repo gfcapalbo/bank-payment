@@ -21,6 +21,7 @@ class AccountInvoice(models.Model):
     @api.onchange('partner_id', 'company_id')
     def _onchange_partner_id(self):
         res = super(AccountInvoice, self)._onchange_partner_id()
+        failed_partner_bank_id_assign = False
         if self.partner_id:
             if self.type == 'in_invoice':
                 pay_mode = self.partner_id.supplier_payment_mode_id
@@ -32,11 +33,18 @@ class AccountInvoice(models.Model):
                         self.commercial_partner_id.bank_ids):
                     self.partner_bank_id =\
                         self.commercial_partner_id.bank_ids[0]
+                else:
+                    failed_partner_bank_id_assign = True
             elif self.type == 'out_invoice':
                 # No bank account assignation is done here as this is only
                 # needed for printing purposes and it can conflict with
                 # SEPA direct debit payments. Current report prints it.
                 self.payment_mode_id = self.partner_id.customer_payment_mode_id
+            elif failed_partner_bank_id_assign == True:
+                # if there is no valid value for new partner we must wipe
+                # not leave old values.
+                self.payment_mode_id = False
+                self.partner_bank_id = False
         else:
             self.payment_mode_id = False
             if self.type == 'in_invoice':
