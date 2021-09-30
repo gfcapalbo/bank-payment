@@ -40,10 +40,9 @@ class AccountInvoice(models.Model):
                 # needed for printing purposes and it can conflict with
                 # SEPA direct debit payments. Current report prints it.
                 self.payment_mode_id = self.partner_id.customer_payment_mode_id
-            elif failed_partner_bank_id_assign == True:
+            elif failed_partner_bank_id_assign:
                 # if there is no valid value for new partner we must wipe
                 # not leave old values.
-                self.payment_mode_id = False
                 self.partner_bank_id = False
         else:
             self.payment_mode_id = False
