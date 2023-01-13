@@ -97,6 +97,7 @@
                     groups="account_payment_order.group_account_payment"
                     icon="fa-list"
                     type="object"
+                    groups="account_payment_order.group_account_payment"
                 >
                     <field
                         name="payment_line_ids_count"
